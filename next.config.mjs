@@ -1,4 +1,11 @@
-/** @type {import('next').NextConfig} */
-const nextConfig = {};
+// import next from "next";
+// const nextConfig = {};
 
-export default nextConfig;
+// export default nextConfig;
+// next.config.js;
+
+export default {
+  reactStrictMode: true,
+};
+
+//If middleware isn't sufficient, restrict access at the API level

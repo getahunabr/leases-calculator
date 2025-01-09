@@ -1,0 +1,47 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+model Lease {
+  id                 Int           @id @default(autoincrement())
+  leaseStartDate     DateTime
+  leaseEndDate       DateTime
+  monthlyRent        Float
+  securityDeposit    Float
+  additionalCharges  Float
+  annualRentIncrease Float
+  leaseType          String
+  maintenanceFee     Float
+  utilitiesIncluded  Boolean
+  latePaymentPenalty Float
+  startDate          DateTime
+  sharedLeases       SharedLease[] @relation("LeaseSharedLeases")
+  owner              User?         @relation(fields: [ownerId], references: [id])
+  ownerId            Int?
+}
+
+model User {
+  id                Int           @id @default(autoincrement())
+  name              String
+  email             String        @unique
+  password          String
+  leases            Lease[]       @relation("UserOwnedLeases") // User's owned leases
+  sharedLeases      SharedLease[] @relation("SharedLeasesSharedWith") // Leases shared with this user
+  ownedSharedLeases SharedLease[] @relation("SharedLeasesOwnedBy") // Leases this user owns
+}
+
+model SharedLease {
+  id           Int      @id @default(autoincrement())
+  leaseId      Int
+  lease        Lease    @relation(fields: [leaseId], references: [id], name: "LeaseSharedLeases")
+  userId       Int
+  user         User     @relation("SharedLeasesOwnedBy", fields: [userId], references: [id]) // Relation to User model (owner of the lease)
+  sharedWithId Int
+  sharedWith   User     @relation("SharedLeasesSharedWith", fields: [sharedWithId], references: [id]) // Relation to User model (person the lease is shared with)
+  updatedAt    DateTime @updatedAt
+}
