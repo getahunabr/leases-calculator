@@ -86,7 +86,7 @@ export default function LoginPage() {
         </form>
         <div className="mt-4 text-center">
           <p className="text-sm text-gray-600">
-            Don't have an account?
+            Don&apos;t have an account?
             <Link
               href="/auth/register"
               className="text-blue-500 hover:underline"
@@ -99,56 +99,3 @@ export default function LoginPage() {
     </div>
   );
 }
-
-////////////////////////////////////////////////////////////////
-
-// "use client";
-
-// import { zodResolver } from "@hookform/resolvers/zod";
-// import { useForm } from "react-hook-form";
-// import { z } from "zod";
-// import { Button } from "@/components/ui/button";
-// import { Form } from "@/components/ui/form";
-// import { Input } from "@/components/ui/input";
-// import CustomFormField from "../CustomFormField";
-// import SubmitButton from "../SubmitButton";
-// import { useState } from "react";
-// import { UserFormValidation } from "@/lib/Validation";
-// import { useRouter } from "next/navigation";
-// import { createUser } from "../../../lib/action";
-
-// const LoginForm = () => {
-//   const router = useRouter();
-//   const [isLoading, setIsLoading] = useState(false);
-//   // 1. Define your form.
-//   const form = useForm<z.infer<typeof UserFormValidation>>({
-//     resolver: zodResolver(UserFormValidation),
-//     defaultValues: {
-//       name: "",
-//       email: "",
-//       phone: "",
-//     },
-//   });
-
-//   // 2. Define a submit handler.
-//   async function onSubmit({
-//     name,
-//     email,
-//     phone,
-//     password,
-//   }: z.infer<typeof UserFormValidation>) {
-//     setIsLoading(true);
-//     try {
-//       const userData = { name, email, phone, password };
-//       const user = await createUser(userData); // Call your createUser function
-//       if (user) router.push(`/patients/${user.$id}/register`);
-//     } catch (error) {
-//       console.error("Error creating user:", error); // Log any errors during user creation
-//     }
-//     setIsLoading(false);
-//   }
-//   return (
-
-//   );
-// };
-// export default LoginForm;
