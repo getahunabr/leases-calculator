@@ -12,19 +12,34 @@ import toast from "react-hot-toast";
 import { useState, useTransition } from "react";
 import Spinner from "./Spinner";
 
-export default function LeaseTable({ lease, setLeases }) {
+interface Lease {
+  id: string | null;
+  leaseStartDate: string | Date;
+  leaseEndDate: string | Date;
+  securityDeposit: number;
+  monthlyRent: number;
+  additionalCharges: number;
+  annualRentIncrease: number;
+  maintenanceFee: number;
+  latePaymentPenalty: number;
+}
+interface LeaseTableProps {
+  lease: Lease[]; // Array of Lease objects
+  setLeases: React.Dispatch<React.SetStateAction<Lease[]>>;
+}
+export default function LeaseTable({ lease, setLeases }: LeaseTableProps) {
   const { isLoading, error, data: leases } = useLeases();
-  const [editingLease, setEditingLease] = useState(null); // Track which lease is being edited
-  const [editedData, setEditedData] = useState({}); // Track edited da
+  const [editingLease, setEditingLease] = useState<string | null>(null);
+  const [editedData, setEditedData] = useState<Partial<Lease>>({});
   const [isDeleteModalOpen, setIsDeleteModalOpen] = useState(false);
-  const [leaseToDelete, setLeaseToDelete] = useState(null);
+  const [leaseToDelete, setLeaseToDelete] = useState<string | null>(null);
   const [isPending, startTransition] = useTransition(); // useTransition for UX
-  const [shareModalLease, setShareModalLease] = useState(null);
+  const [shareModalLease, setShareModalLease] = useState<Lease | null>(null);
   const [emailToShare, setEmailToShare] = useState("");
   const queryClient = useQueryClient();
 
   // Handle changes to the input fields
-  const handleInputChange = (e) => {
+  const handleInputChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const { name, value } = e.target;
     setEditedData((prevData) => ({
       ...prevData,
@@ -33,7 +48,7 @@ export default function LeaseTable({ lease, setLeases }) {
   };
 
   // Handle the "Edit" button click
-  const handleEditClick = (lease) => {
+  const handleEditClick = (lease: Lease) => {
     const formattedStartDate = toISODate(lease.leaseStartDate);
     const formattedEndDate = toISODate(lease.leaseEndDate);
 
@@ -115,7 +130,7 @@ export default function LeaseTable({ lease, setLeases }) {
     });
   };
 
-  const toISODate = (date: string | Date): string => {
+  const toISODate = (date: string | Date | undefined): string => {
     if (!date) return "";
     const d = new Date(date);
     return d.toISOString().split("T")[0];
@@ -248,7 +263,7 @@ export default function LeaseTable({ lease, setLeases }) {
         </thead>
         <tbody>
           {leases && leases.length > 0 ? (
-            leases.map((lease) => (
+            leases.map((lease: any) => (
               <tr key={lease.id} className="hover:bg-gray-50 transition-colors">
                 <td className="px-4 py-2 border border-gray-200 text-center">
                   {lease.id}
