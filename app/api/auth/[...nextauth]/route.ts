@@ -1,4 +1,4 @@
-import NextAuth from "next-auth";
+import NextAuth, { NextAuthOptions, Session, User } from "next-auth";
 import CredentialsProvider from "next-auth/providers/credentials";
 import { PrismaClient } from "@prisma/client";
 import bcrypt from "bcryptjs";
@@ -55,19 +55,20 @@ const handler = NextAuth({
   },
   secret: process.env.NEXTAUTH_SECRET,
   callbacks: {
-    async session({ session, token }) {
+    async session({ session, token }: { session: Session; token: any }) {
       if (token) {
+        session.user = session.user || {};
         session.user.id = token.id;
       }
       return session;
     },
-    async jwt({ token, user }) {
+    async jwt({ token, user }: { token: any; user?: User }) {
       if (user) {
         token.id = user.id;
       }
       return token;
     },
-    async redirect({ url, baseUrl }) {
+    async redirect({ url, baseUrl }: any) {
       // Redirect to the page the user tried to access
       if (url.includes("/protected")) {
         return url;
