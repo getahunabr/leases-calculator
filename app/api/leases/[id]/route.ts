@@ -1,6 +1,7 @@
-import { prisma } from "@/app/_lib/Prisma";
+import { PrismaClient } from "@prisma/client";
 import { NextRequest, NextResponse } from "next/server";
 
+const prisma = new PrismaClient();
 // Handle DELETE request
 export async function DELETE(
   req: NextRequest,
