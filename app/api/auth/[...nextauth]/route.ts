@@ -6,7 +6,7 @@ import bcrypt from "bcryptjs";
 const prisma = new PrismaClient();
 // Use a singleton pattern to prevent multiple PrismaClient instances in dev mode
 
-const handler = NextAuth({
+const authOptions: NextAuthOptions = {
   providers: [
     CredentialsProvider({
       name: "credentials",
@@ -77,6 +77,7 @@ const handler = NextAuth({
       return baseUrl;
     },
   },
-});
+};
+const handler = NextAuth(authOptions);
 
 export { handler as GET, handler as POST };
