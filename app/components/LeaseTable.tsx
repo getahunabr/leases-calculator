@@ -25,7 +25,6 @@ interface Lease {
 }
 interface LeaseTableProps {
   lease: Lease[]; // Array of Lease objects
-  setLeases: React.Dispatch<React.SetStateAction<Lease[]>>;
 }
 export default function LeaseTable({ lease }: LeaseTableProps) {
   const { isLoading, error, data: leases } = useLeases();
