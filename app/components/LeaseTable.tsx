@@ -27,7 +27,7 @@ interface LeaseTableProps {
   lease: Lease[]; // Array of Lease objects
   setLeases: React.Dispatch<React.SetStateAction<Lease[]>>;
 }
-export default function LeaseTable({ lease, setLeases }: LeaseTableProps){
+export default function LeaseTable({ lease, setLeases }: LeaseTableProps) {
   const { isLoading, error, data: leases } = useLeases();
   const [editingLease, setEditingLease] = useState<string | null>(null);
   const [editedData, setEditedData] = useState<Partial<Lease>>({});
@@ -536,4 +536,4 @@ export default function LeaseTable({ lease, setLeases }: LeaseTableProps){
       )}
     </div>
   );
-})
+}
