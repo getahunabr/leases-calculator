@@ -17,7 +17,6 @@ const handler = NextAuth({
 
       async authorize(credentials: any) {
         if (!credentials || !credentials.email || !credentials.password) {
-          console.error("Missing credentials");
           throw new Error("Email and password are required");
         }
         console.log("Credentials received:", credentials);
