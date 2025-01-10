@@ -1,9 +1,14 @@
 "use client";
-import { useEffect, useState } from "react";
+import { useState } from "react";
 import axios from "axios";
 import LeaseTable from "../components/LeaseTable";
 import { useRouter } from "next/navigation";
 import { useLeases } from "../hooks/UseLease";
+
+interface LeaseTableProps {
+  leases: any;
+}
+
 const Dashboard = () => {
   const router = useRouter();
 
@@ -21,24 +26,6 @@ const Dashboard = () => {
     // Redirect to leases page
     router.push("/leases");
   };
-
-  // useEffect(() => {
-  //   const fetchLeases = async () => {
-  //     try {
-  //       const response = await axios.get("/api/getLeases");
-  //       if (response.data) {
-  //         setLeases(response.data);
-  //       }
-  //       setLoading(false);
-  //     } catch (err) {
-  //       console.error(err);
-  //       setError("Failed to load leases.");
-  //       setLoading(false);
-  //     }
-  //   };
-
-  //   fetchLeases();
-  // }, []);
 
   return (
     <div className="min-h-screen bg-gray-100">
@@ -89,7 +76,7 @@ const Dashboard = () => {
                 Manage all active leases in one place.
               </p>
             </div>
-            <LeaseTable leases={leases} />
+            <LeaseTable lease={leases} />
           </>
         )}
       </main>
