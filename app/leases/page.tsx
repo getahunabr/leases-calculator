@@ -3,6 +3,27 @@ import LeaseShareForm from "../components/Form/LeaseShareForm";
 
 const prisma = new PrismaClient();
 
+interface Lease {
+  id: number;
+  owner: {
+    id: number;
+    name: string;
+    email: string;
+    password: string;
+  } | null;
+  startDate: Date;
+  leaseEndDate: Date;
+  sharedLeases: SharedLease[];
+}
+
+interface SharedLease {
+  id: number;
+  sharedWith: {
+    email: string;
+  };
+}
+
+const leases: Lease[] = [];
 export default async function LeasePage() {
   const leases = await prisma.lease.findMany({
     include: {
@@ -21,7 +42,7 @@ export default async function LeasePage() {
         Your Lease
       </h1>
 
-      {leases.map((lease) => (
+      {leases.map((lease: Lease) => (
         <div
           key={lease.id}
           className="bg-white border border-gray-300 rounded-lg shadow-md p-6 mb-6 transition-transform transform hover:scale-105 hover:shadow-xl"
@@ -49,7 +70,7 @@ export default async function LeasePage() {
           <div className="mt-4">
             <strong className="text-lg text-gray-700">Shared with:</strong>
             <ul className="list-disc pl-6 mt-2 space-y-1">
-              {lease.sharedLeases.map((sharedLease) => (
+              {lease.sharedLeases.map((sharedLease: SharedLease) => (
                 <li key={sharedLease.id} className="text-gray-700">
                   {sharedLease.sharedWith.email}
                 </li>
