@@ -20,8 +20,8 @@ model Lease {
   utilitiesIncluded  Boolean
   latePaymentPenalty Float
   startDate          DateTime
-  sharedLeases       SharedLease[] @relation("LeaseSharedLeases")
-  owner              User?         @relation(fields: [ownerId], references: [id])
+  owner      User?     @relation(fields: [ownerId], references: [id])
+  sharedLeases SharedLease[] @relation("LeaseSharedLeases")
   ownerId            Int?
 }
 
@@ -30,8 +30,8 @@ model User {
   name              String
   email             String        @unique
   password          String
-  leases            Lease[]       @relation("UserOwnedLeases") // User's owned leases
-  sharedLeases      SharedLease[] @relation("SharedLeasesSharedWith") 
+  leases        Lease[]  @relation("UserOwnedLeases")
+  sharedLeases  SharedLease[] @relation("SharedLeasesSharedWith") 
   ownedSharedLeases SharedLease[] @relation("SharedLeasesOwnedBy") // Leases this user owns
 }
 
