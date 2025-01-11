@@ -1,10 +1,7 @@
 import NextAuth, { NextAuthOptions, Session, User } from "next-auth";
 import CredentialsProvider from "next-auth/providers/credentials";
-import { PrismaClient } from "@prisma/client";
 import bcrypt from "bcryptjs";
-
-const prisma = new PrismaClient();
-// Use a singleton pattern to prevent multiple PrismaClient instances in dev mode
+import prisma from "@/app/_lib/prisma";
 
 const authOptions: NextAuthOptions = {
   providers: [
@@ -51,7 +48,7 @@ const authOptions: NextAuthOptions = {
     }),
   ],
   pages: {
-    signIn: "/auth/login", // Redirect to the home page after login
+    signIn: "/auth/login",
   },
   secret: process.env.NEXTAUTH_SECRET,
   callbacks: {

@@ -31,7 +31,7 @@ model User {
   email             String        @unique
   password          String
   leases            Lease[]       @relation("UserOwnedLeases") // User's owned leases
-  sharedLeases      SharedLease[] @relation("SharedLeasesSharedWith") // Leases shared with this user
+  sharedLeases      SharedLease[] @relation("SharedLeasesSharedWith") 
   ownedSharedLeases SharedLease[] @relation("SharedLeasesOwnedBy") // Leases this user owns
 }
 
