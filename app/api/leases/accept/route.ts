@@ -1,34 +1,55 @@
 import { decodeToken } from "@/utils/email/generateToken";
 import { PrismaClient } from "@prisma/client";
-import { NextApiRequest, NextApiResponse } from "next";
+import { NextResponse } from "next/server"; // Correct import for response
 const prisma = new PrismaClient();
 
-export async function POST(req: NextApiRequest, res: NextApiResponse) {
+export async function POST(req: Request) {
+  // Corrected type for the request object
   try {
-    const { token } = req.body;
+    // Parse the token from the request body
+    const { token } = await req.json();
 
-    //decode the token
+    // Decode the token
     const [leaseId, email] = decodeToken(token);
 
-    //check if the user exist
+    // Ensure leaseId is a valid number
+    const parsedLeaseId = parseInt(leaseId, 10);
+
+    if (isNaN(parsedLeaseId)) {
+      return NextResponse.json({ error: "Invalid lease ID" }, { status: 400 });
+    }
+
+    // Check if the user exists in the database
     const user = await prisma.user.findUnique({ where: { email } });
     if (!user) {
-      return new Response(JSON.stringify({ error: " user not found" }), {
-        status: 404,
-      });
+      return NextResponse.json({ error: "User not found" }, { status: 404 });
     }
-    //Add the shared lease
+
+    // Add the shared lease by creating an entry in the sharedLease table
     const sharedLease = await prisma.sharedLease.create({
       data: {
-        leaseId: parseInt(leaseId),
+        leaseId: parsedLeaseId,
         userId: user.id,
         sharedWithId: user.id,
       },
     });
-    return new Response(
-      JSON.stringify({ message: "Lease shared successfully" })
+
+    // Return a success message
+    return NextResponse.json(
+      { message: "Lease shared successfully" },
+      { status: 200 }
     );
-  } catch (error) {
-    return new Response(JSON.stringify({ error: "Invalid or expired token" }));
+  } catch (error: unknown) {
+    // Handle the error gracefully
+    if (error instanceof Error) {
+      return NextResponse.json(
+        { error: "Invalid or expired token", details: error.message },
+        { status: 400 }
+      );
+    }
+    return NextResponse.json(
+      { error: "Something went wrong" },
+      { status: 500 }
+    );
   }
 }
