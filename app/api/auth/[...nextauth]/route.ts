@@ -2,6 +2,7 @@ import NextAuth, { NextAuthOptions, Session, User } from "next-auth";
 import CredentialsProvider from "next-auth/providers/credentials";
 import bcrypt from "bcryptjs";
 import prisma from "@/app/_lib/prisma";
+import { User as PrismaUser } from "@prisma/client";
 
 const authOptions: NextAuthOptions = {
   providers: [
@@ -12,7 +13,7 @@ const authOptions: NextAuthOptions = {
         password: { label: "Password", type: "password" },
       },
 
-      async authorize(credentials: any) {
+      async authorize(credentials: any): Promise<PrismaUser | null> {
         if (!credentials || !credentials.email || !credentials.password) {
           throw new Error("Email and password are required");
         }
@@ -40,7 +41,7 @@ const authOptions: NextAuthOptions = {
             throw new Error("Invalid password");
           }
 
-          return { id: user.id, email: user.email, name: user.name };
+          return { id: user.id.toString(), email: user.email, name: user.name };
         } catch (error) {
           throw new Error("Authentication failed");
         }
