@@ -58,7 +58,7 @@ export default async function LeasePage() {
           </div>
 
           <div className="mt-6">
-            <LeaseShareForm leaseId={lease.id} />
+            <LeaseShareForm leaseId={lease.id.toString()} />
           </div>
         </div>
       ))}
