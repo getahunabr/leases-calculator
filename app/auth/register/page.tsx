@@ -12,9 +12,11 @@ export default function RegisterPage() {
     e.preventDefault();
     setLoading(true);
     setError(null);
-    const name = e.target.name.value;
-    const email = e.target.email.value;
-    const password = e.target.password.value;
+    const form = e.target as HTMLFormElement;
+    const name = (form.elements.namedItem("name") as HTMLInputElement).value;
+    const email = (form.elements.namedItem("email") as HTMLInputElement).value;
+    const password = (form.elements.namedItem("password") as HTMLInputElement)
+      .value;
 
     try {
       const response = await fetch("/api/register", {
@@ -116,115 +118,3 @@ export default function RegisterPage() {
     </div>
   );
 }
-
-//////////////////////////////////////////////////////////////////////
-
-// import { useState } from "react";
-
-// const Rigester = () => {
-//   const [formData, setFormData] = useState({
-//     name: "",
-//     email: "",
-//     password: "",
-//   });
-//   const handleChange = (e) => {
-//     setFormData({ ...formData, [e.target.name]: e.target.value });
-//   };
-//   const handleSubmit = (e) => {
-//     e.preventDefault();
-//     console.log(formData);
-//     setFormData({ name: "", email: "", password: "" });
-//     alert("Form submitted successfully!");
-//   };
-//   return (
-//     <form onSubmit={handleSubmit}>
-//       <input
-//         type="text"
-//         name="name"
-//         placeholder="Name"
-//         value={formData.name}
-//         onChange={handleChange}
-//       />
-//       <label>
-//         <input
-//           type="email"
-//           name="email"
-//           value={formData.email}
-//           onChange={handleChange}
-//         />
-//       </label>
-//       <label>
-//         Password:
-//         <input
-//           type="password"
-//           name="password"
-//           value={formData.password}
-//           onChange={handleChange}
-//         />
-//       </label>
-//     </form>
-//   );
-// };
-/////////////////////////////////////////////////////
-
-// "use client";
-
-// import { zodResolver } from "@hookform/resolvers/zod";
-// import Image from "next/image";
-// import { useRouter } from "next/navigation";
-// import { useState } from "react";
-// import { useForm } from "react-hook-form";
-// import { z } from "zod";
-// import "react-datepicker/dist/react-datepicker.css";
-// import "react-phone-number-input/style.css";
-// import SubmitButton from "../SubmitButton";
-// import { PatientFormValidation } from "@/lib/Validation";
-
-// const RegisterForm = ({ user }: { user: User }) => {
-//   const router = useRouter();
-//   const [isLoading, setIsLoading] = useState(false);
-
-//   const form = useForm<z.infer<typeof PatientFormValidation>>({
-//     resolver: zodResolver(PatientFormValidation),
-//     defaultValues: {
-//       ...PatientFormDefaultValues,
-//       name: user.name,
-//       email: user.email,
-//       phone: user.phone,
-//     },
-//   });
-
-//   const onSubmit = async (values: z.infer<typeof PatientFormValidation>) => {
-//     setIsLoading(true);
-
-//     try {
-//       const patient = {
-//         userId: user.$id,
-//         name: values.name,
-//         email: values.email,
-//         phone: values.phone,
-//         birthDate: new Date(values.birthDate),
-//         gender: values.gender,
-//         address: values.address,
-//         occupation: values.occupation,
-//         privacyConsent: values.privacyConsent,
-//       };
-
-//       const newPatient = await registerPatient(patient);
-
-//       if (newPatient) {
-//         router.push(`/patients/${user.$id}/new-appointment`);
-//       }
-//     } catch (error) {
-//       console.log(error);
-//     }
-
-//     setIsLoading(false);
-//   };
-
-//   return (
-
-//   );
-// };
-
-// export default RegisterForm;

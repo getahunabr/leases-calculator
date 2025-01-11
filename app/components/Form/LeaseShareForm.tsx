@@ -1,7 +1,11 @@
 "use client";
 import { useState } from "react";
 
-export default function LeaseShareForm({ leaseId }) {
+interface LeaseShareFormProps {
+  leaseId: string;
+}
+
+export default function LeaseShareForm({ leaseId }: LeaseShareFormProps) {
   const [invitedEmail, setInvitedEmail] = useState("");
   const [message, setMessage] = useState("");
 

@@ -1,7 +1,20 @@
 import { PrismaClient } from "@prisma/client";
 const prisma = new PrismaClient();
 
-export async function POST(req) {
+interface LeaseRequestBody {
+  startDate: string;
+  endDate: string;
+  monthlyRent: number;
+  securityDeposit: number;
+  additionalCharges: number;
+  annualIncrease: number;
+  leaseType: string;
+  utilitiesIncluded: boolean;
+  maintenanceFees: number;
+  latePenalty: number;
+}
+
+export async function POST(req: Request): Promise<Response> {
   try {
     const {
       startDate,
@@ -14,7 +27,7 @@ export async function POST(req) {
       utilitiesIncluded,
       maintenanceFees,
       latePenalty,
-    } = await req.json();
+    }: LeaseRequestBody = await req.json();
     console.log("Request Body:", {
       startDate,
       endDate,
@@ -31,7 +44,8 @@ export async function POST(req) {
     // Calculate the duration in days
     const start = new Date(startDate);
     const end = new Date(endDate);
-    const leaseDurationInDays = (end - start) / (1000 * 3600 * 24); // Convert to days
+    const leaseDurationInDays =
+      (end.getTime() - start.getTime()) / (1000 * 3600 * 24); // Convert to days
     console.log("Lease Duration in Days:", leaseDurationInDays);
 
     // Calculate rent for partial month
@@ -94,7 +108,7 @@ export async function POST(req) {
     return new Response(JSON.stringify({ totalCost: roundedTotalCost }), {
       status: 200,
     });
-  } catch (error) {
+  } catch (error: any) {
     return new Response(JSON.stringify({ error: error.message }), {
       status: 500,
     });

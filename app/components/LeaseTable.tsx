@@ -1,4 +1,3 @@
-// components/LeaseTable.tsx
 "use client";
 
 import { useLeases } from "../hooks/UseLease";
@@ -68,7 +67,10 @@ export default function LeaseTable({ lease }: LeaseTableProps) {
   // Edit lease mutation
   const editLeaseMutation = useMutation({
     // mutationFn: Executes the mutation function
-    mutationFn: async (editedLeaseData) => {
+    mutationFn: async (editedLeaseData: {
+      id: string;
+      data: Partial<Lease>;
+    }) => {
       const { id, data } = editedLeaseData;
       const response = await axios.put(`/api/leases/${id}`, data);
       return response.data;
@@ -77,7 +79,7 @@ export default function LeaseTable({ lease }: LeaseTableProps) {
     mutationKey: ["editLease"], // Unique identifier
     onSuccess: (data) => {
       // Invalidate the leases query to refetch after editing
-      queryClient.invalidateQueries(["leases"]);
+      queryClient.invalidateQueries({ queryKey: ["leases"] });
       toast.success("Lease edited successfully!");
       console.log("Lease edited successfully:", data);
     },
@@ -90,6 +92,10 @@ export default function LeaseTable({ lease }: LeaseTableProps) {
 
   // Save edited lease
   const handleSaveEdit = async () => {
+    if (!editingLease) {
+      console.error("No lease is being edited.");
+      return;
+    }
     const updatedLeaseData = {
       id: editingLease,
       data: {
@@ -108,12 +114,12 @@ export default function LeaseTable({ lease }: LeaseTableProps) {
 
   // Delete lease mutation
   const deleteLeaseMutation = useMutation({
-    mutationFn: async (id) => {
+    mutationFn: async (id: string) => {
       await axios.delete(`/api/leases/${id}`);
     },
     onSuccess: () => {
       // Invalidate and refetch the leases data after a successful deletion
-      queryClient.invalidateQueries(["leases"]);
+      queryClient.invalidateQueries({ queryKey: ["leases"] });
       toast.success("Lease deleted successfully!");
       setIsDeleteModalOpen(false);
     },
@@ -124,9 +130,9 @@ export default function LeaseTable({ lease }: LeaseTableProps) {
 
   // Optimistic UI for deleting a lease
   const deleteLease = async () => {
-    startTransition(() => {
+    if (leaseToDelete) {
       deleteLeaseMutation.mutate(leaseToDelete);
-    });
+    }
   };
 
   const toISODate = (date: string | Date | undefined): string => {
@@ -142,14 +148,20 @@ export default function LeaseTable({ lease }: LeaseTableProps) {
   };
   // Mutation for sharing lease
   const shareLeaseMutation = useMutation({
-    mutationFn: async ({ leaseId, email }) => {
+    mutationFn: async ({
+      leaseId,
+      email,
+    }: {
+      leaseId: string;
+      email: string;
+    }) => {
       const response = await axios.post(`/api/leases/${leaseId}/share`, {
         email,
       });
       return response.data;
     },
     onSuccess: () => {
-      queryClient.invalidateQueries(["leases"]);
+      queryClient.invalidateQueries({ queryKey: ["leases"] });
       toast.success("Lease shared successfully!");
       setEmailToShare("");
       setShareModalLease(null);
@@ -159,7 +171,7 @@ export default function LeaseTable({ lease }: LeaseTableProps) {
     },
   });
   // Open share modal
-  const openShareModal = (lease) => {
+  const openShareModal = (lease: Lease) => {
     setShareModalLease(lease);
   };
 
@@ -199,9 +211,11 @@ export default function LeaseTable({ lease }: LeaseTableProps) {
         const errorMessage = response?.data?.message || "Unknown error";
         toast.error(`Failed to share the lease: ${errorMessage}`);
       }
-    } catch (error) {
+    } catch (error: any) {
       const errorMessage =
-        error?.response?.data?.message ||
+        (error.response &&
+          error.response.data &&
+          error.response.data.message) ||
         error.message ||
         "Something went wrong";
       toast.error(`Error sharing lease: ${errorMessage}`);
@@ -217,7 +231,7 @@ export default function LeaseTable({ lease }: LeaseTableProps) {
   if (error) return <div>Error: {error.message}</div>;
 
   // Open the delete modal
-  const openDeleteModal = (leaseId) => {
+  const openDeleteModal = (leaseId: string) => {
     setLeaseToDelete(leaseId);
     setIsDeleteModalOpen(true);
   };
@@ -340,7 +354,7 @@ export default function LeaseTable({ lease }: LeaseTableProps) {
                 <input
                   type="date"
                   name="leaseStartDate"
-                  value={editedData.leaseStartDate}
+                  value={toISODate(editedData.leaseStartDate)}
                   onChange={handleInputChange}
                   className="w-full px-4 py-2 bg-gray-100  text-gray-600 border border-gray-300 rounded-md cursor-not-allowed"
                   disabled
@@ -355,7 +369,7 @@ export default function LeaseTable({ lease }: LeaseTableProps) {
                 <input
                   type="date"
                   name="leaseEndDate"
-                  value={editedData.leaseEndDate}
+                  value={toISODate(editedData.leaseEndDate)}
                   onChange={handleInputChange}
                   className="w-full px-4 py-2 bg-gray-100 text-gray-600 border border-gray-300 rounded-md cursor-not-allowed"
                   disabled
@@ -494,7 +508,7 @@ export default function LeaseTable({ lease }: LeaseTableProps) {
                 Cancel
               </button>
               <button
-                onClick={() => deleteLease(leaseToDelete)} // Call delete function
+                onClick={deleteLease} // Call delete function
                 className="px-6 py-2 bg-red-500 text-white rounded-md hover:bg-red-600 focus:outline-none focus:ring-2 focus:ring-red-500 transition-all duration-200"
               >
                 Delete
@@ -507,7 +521,7 @@ export default function LeaseTable({ lease }: LeaseTableProps) {
         <div className="fixed inset-0 flex justify-center items-center bg-gray-500 bg-opacity-50 z-50">
           <div className="bg-white p-8 rounded-lg shadow-lg w-1/3 max-w-lg">
             <h2 className="text-xl font-semibold text-center mb-4">
-              Share Lease: {shareModalLease.name}
+              Share Lease
             </h2>
             <input
               type="email"

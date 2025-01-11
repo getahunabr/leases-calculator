@@ -89,7 +89,7 @@ const LeaseInputForm: React.FC = () => {
     }
   };
   const router = useRouter();
-  const { mutate: saveLease, isLoading } = useMutation({
+  const { mutate: saveLease, status } = useMutation({
     mutationFn: async (data: LeaseFormData) => {
       const response = await fetch("/api/leases", {
         method: "POST",
@@ -318,7 +318,7 @@ const LeaseInputForm: React.FC = () => {
           type="submit"
           className="w-full py-3 bg-blue-500 text-white font-medium rounded-lg hover:bg-blue-600 focus:outline-none focus:ring-2 focus:ring-blue-500"
         >
-          {isLoading ? "Saving Lease..." : "Save Lease"}
+          {status === "pending" ? "Saving Lease..." : "Save Lease"}
         </button>
       </div>
       {totalCost !== null && (

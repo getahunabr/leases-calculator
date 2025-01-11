@@ -4,9 +4,14 @@ import { PrismaClient } from "@prisma/client";
 
 const prisma = new PrismaClient();
 
-export async function POST(req) {
+interface PostRequest {
+  leaseId: string;
+  invitedEmail: string;
+}
+
+export async function POST(req: Request): Promise<Response> {
   try {
-    const { leaseId, invitedEmail } = await req.json();
+    const { leaseId, invitedEmail }: PostRequest = await req.json();
 
     // Validate the input
     if (!leaseId || !invitedEmail) {
@@ -40,9 +45,14 @@ export async function POST(req) {
       { status: 200 }
     );
   } catch (error) {
-    console.error("Error in POST /api/leases/share:", error.message);
+    const errorMessage =
+      error instanceof Error ? error.message : "Unknown error";
+    console.error("Error in POST /api/leases/share:", errorMessage);
     return new Response(
-      JSON.stringify({ error: error.message || "Failed to send invitation" }),
+      JSON.stringify({
+        error:
+          error instanceof Error ? error.message : "Failed to send invitation",
+      }),
       {
         status: 500,
       }

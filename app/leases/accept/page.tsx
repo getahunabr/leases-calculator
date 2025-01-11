@@ -9,11 +9,12 @@ export default function AcceptLease() {
   const [message, setMessage] = useState("");
 
   useEffect(() => {
-    // Wait until router.query is defined and get the token safely
-    if (router.query && router.query.token) {
-      setToken(router.query.token as string);
+    const urlParams = new URLSearchParams(window.location.search);
+    const token = urlParams.get("token");
+    if (token) {
+      setToken(token);
     }
-  }, [router.query]); // This ensures that the effect is triggered when router.query changes
+  }, []); // This ensures that the effect is triggered only once when the component mounts
 
   useEffect(() => {
     if (token) {

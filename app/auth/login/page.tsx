@@ -7,7 +7,7 @@ import Link from "next/link";
 
 export default function LoginPage() {
   const router = useRouter();
-  const [error, setError] = useState(null);
+  const [error, setError] = useState<string | null>(null);
   const [loading, setLoading] = useState(false);
 
   const handleSubmit = async (e: React.FormEvent) => {
@@ -15,8 +15,11 @@ export default function LoginPage() {
     setLoading(true);
     setError(null);
 
-    const email = e.target.email.value;
-    const password = e.target.password.value;
+    const target = e.target as HTMLFormElement;
+    const email = (target.elements.namedItem("email") as HTMLInputElement)
+      .value;
+    const password = (target.elements.namedItem("password") as HTMLInputElement)
+      .value;
 
     const response = await signIn("credentials", {
       // redirect: false,

@@ -1,13 +1,14 @@
 import { decodeToken } from "@/utils/email/generateToken";
 import { PrismaClient } from "@prisma/client";
+import { NextApiRequest, NextApiResponse } from "next";
 const prisma = new PrismaClient();
 
-export async function POST(req) {
+export async function POST(req: NextApiRequest, res: NextApiResponse) {
   try {
-    const { token } = await req.json();
+    const { token } = req.body;
 
     //decode the token
-    const { leaseId, email } = decodeToken(token);
+    const [leaseId, email] = decodeToken(token);
 
     //check if the user exist
     const user = await prisma.user.findUnique({ where: { email } });
@@ -17,9 +18,12 @@ export async function POST(req) {
       });
     }
     //Add the shared lease
-    //create a shared lease entry
     const sharedLease = await prisma.sharedLease.create({
-      data: { leaseId: parseInt(leaseId), sharedWithId: user.id },
+      data: {
+        leaseId: parseInt(leaseId),
+        userId: user.id,
+        sharedWithId: user.id,
+      },
     });
     return new Response(
       JSON.stringify({ message: "Lease shared successfully" })
