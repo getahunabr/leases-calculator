@@ -1,12 +1,3 @@
-generator client {
-  provider = "prisma-client-js"
-}
-
-datasource db {
-  provider = "postgresql"
-  url      = env("DATABASE_URL")
-}
-
 model Lease {
   id                 Int           @id @default(autoincrement())
   leaseStartDate     DateTime
@@ -20,8 +11,8 @@ model Lease {
   utilitiesIncluded  Boolean
   latePaymentPenalty Float
   startDate          DateTime
-  owner      User?     @relation(fields: [ownerId], references: [id])
-  sharedLeases SharedLease[] @relation("LeaseSharedLeases")
+  owner              User?         @relation("UserOwnedLeases", fields: [ownerId], references: [id])
+  sharedLeases       SharedLease[] @relation("LeaseSharedLeases")
   ownerId            Int?
 }
 
@@ -30,9 +21,9 @@ model User {
   name              String
   email             String        @unique
   password          String
-  leases        Lease[]  @relation("UserOwnedLeases")
-  sharedLeases  SharedLease[] @relation("SharedLeasesSharedWith") 
-  ownedSharedLeases SharedLease[] @relation("SharedLeasesOwnedBy") // Leases this user owns
+  leases            Lease[]       @relation("UserOwnedLeases") // Correct relation name
+  sharedLeases      SharedLease[] @relation("SharedLeasesSharedWith")
+  ownedSharedLeases SharedLease[] @relation("SharedLeasesOwnedBy")
 }
 
 model SharedLease {
@@ -40,8 +31,8 @@ model SharedLease {
   leaseId      Int
   lease        Lease    @relation(fields: [leaseId], references: [id], name: "LeaseSharedLeases")
   userId       Int
-  user         User     @relation("SharedLeasesOwnedBy", fields: [userId], references: [id]) // Relation to User model (owner of the lease)
+  user         User     @relation("SharedLeasesOwnedBy", fields: [userId], references: [id])
   sharedWithId Int
-  sharedWith   User     @relation("SharedLeasesSharedWith", fields: [sharedWithId], references: [id]) // Relation to User model (person the lease is shared with)
+  sharedWith   User     @relation("SharedLeasesSharedWith", fields: [sharedWithId], references: [id])
   updatedAt    DateTime @updatedAt
 }
