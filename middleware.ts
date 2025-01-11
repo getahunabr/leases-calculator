@@ -1,41 +1,22 @@
-// import { NextResponse } from "next/server";
-// import { auth } from "./app/_lib/auth";
-
-// export function middleware(request) {
-//   console.log(request);
-//   return NextResponse.redirect(new URL("/about", request.url));
-// }
-
-// export const middleware = auth;
-
-// export const config = {
-//   matcher: ["/account"],
-// };
-
-// import { auth } from "@/app/_lib/auth";
-// export const middleware = auth;
-
-// export const config = {
-//   matcher: ["/Dashboard"],
-// };
-
-// import { withAuth } from "next-auth/middleware";
-// export default withAuth({
-//   pages: {
-//     signIn: "/auth/login",
-//   },
-// });
-// export const config = {
-//   matcher: ["/protected/Dashboard", "/"],
-// };
-////////////////////////////////////////////////////////////
 import { getToken } from "next-auth/jwt";
-import { NextResponse } from "next/server";
+import { NextRequest, NextResponse } from "next/server";
+import { JWT } from "next-auth/jwt";
 
-export async function middleware(req) {
+import { NextURL } from "next/dist/server/web/next-url";
+
+interface MiddlewareRequest extends NextRequest {
+  nextUrl: NextURL;
+}
+
+export async function middleware(
+  req: MiddlewareRequest
+): Promise<NextResponse> {
   console.log("Middleware triggered for:", req.nextUrl.pathname);
 
-  const token = await getToken({ req, secret: process.env.NEXTAUTH_SECRET });
+  const token: JWT | null = await getToken({
+    req,
+    secret: process.env.NEXTAUTH_SECRET,
+  });
 
   if (!token) {
     const loginUrl = new URL("/auth/login", req.url);
