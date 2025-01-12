@@ -5,9 +5,9 @@ const prisma = new PrismaClient();
 // Handle DELETE request
 export async function DELETE(
   req: NextRequest,
-  { params }: { params: { id: string } }
+  context: { params: { id: string } }
 ) {
-  const { id } = params;
+  const { id } = context.params;
 
   try {
     const lease = await prisma.lease.delete({
@@ -26,9 +26,9 @@ export async function DELETE(
 // Handle PUT request (Edit lease)
 export async function PUT(
   req: NextRequest,
-  { params }: { params: { id: string } }
+  context: { params: { id: string } }
 ) {
-  const { id } = params;
+  const { id } = context.params;
   const data = await req.json();
   // Ensure leaseStartDate and leaseEndDate are in the correct ISO-8601 format
   const leaseStartDate = new Date(
