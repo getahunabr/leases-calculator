@@ -2,20 +2,26 @@ import { PrismaClient } from "@prisma/client";
 import { NextRequest, NextResponse } from "next/server";
 
 const prisma = new PrismaClient();
-// Handle DELETE request
+
+// DELETE request handler
 export async function DELETE(
   req: NextRequest,
-  { params }: { params: { id: string } }
+  context: { params: { id: string } }
 ) {
-  const { id } = params;
+  const { id } = context.params; // Extract the 'id' from params
 
   try {
+    // Attempt to delete the lease with the given id
     const lease = await prisma.lease.delete({
-      where: { id: parseInt(id) },
+      where: { id: parseInt(id) }, // Ensure id is parsed to an integer
     });
+
+    // Return a successful response with the deleted lease data
     return NextResponse.json(lease, { status: 200 });
   } catch (error) {
-    console.error("Error during lease update:", error);
+    console.error("Error during lease deletion:", error);
+
+    // Return an error response if something goes wrong
     return NextResponse.json(
       { error: "Error deleting lease" },
       { status: 500 }
@@ -24,14 +30,13 @@ export async function DELETE(
 }
 
 // Handle PUT request (Edit lease)
-
 export async function PUT(
-  request: Request,
+  req: NextRequest,
   context: { params: { id: string } }
 ) {
-  const { id } = context.params; // Extract the 'id' from the context.params
+  const { id } = context.params; // Extract the 'id' from params
 
-  const data = await request.json(); // Parse incoming JSON body
+  const data = await req.json(); // Parse incoming JSON data
 
   // Ensure leaseStartDate and leaseEndDate are in the correct ISO-8601 format
   const leaseStartDate = new Date(
@@ -48,9 +53,9 @@ export async function PUT(
   const latePaymentPenalty = parseFloat(data.latePaymentPenalty);
 
   try {
-    // Perform the update with Prisma
+    // Perform the update using Prisma
     const updatedLease = await prisma.lease.update({
-      where: { id: parseInt(id) }, // Use id to find the lease to update
+      where: { id: parseInt(id) }, // Use the dynamic 'id' to find the lease
       data: {
         leaseStartDate,
         leaseEndDate,
@@ -65,12 +70,15 @@ export async function PUT(
 
     console.log("Updated lease:", updatedLease);
 
-    return NextResponse.json(updatedLease, { status: 200 }); // Respond with the updated lease data
+    // Respond with the updated lease data
+    return NextResponse.json(updatedLease, { status: 200 });
   } catch (error) {
     console.error("Error during lease update:", error);
+
+    // Handle errors and return a 500 response
     return NextResponse.json(
       { error: "Error updating lease" },
       { status: 500 }
-    ); // Return an error response if something goes wrong
+    );
   }
 }
