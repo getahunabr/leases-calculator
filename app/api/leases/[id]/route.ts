@@ -26,9 +26,9 @@ export async function DELETE(
 // Handle PUT request (Edit lease)
 export async function PUT(
   req: NextRequest,
-  context: { params: { id: string } }
+  { params }: { params: { id: string } }
 ) {
-  const { id } = context.params;
+  const { id } = params;
   const data = await req.json();
   // Ensure leaseStartDate and leaseEndDate are in the correct ISO-8601 format
   const leaseStartDate = new Date(
