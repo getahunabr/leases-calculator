@@ -25,11 +25,11 @@ export async function DELETE(
 
 // Handle PUT request (Edit lease)
 export async function PUT(
-  req: NextRequest,
+  request: Request,
   { params }: { params: { id: string } }
 ) {
   const { id } = params;
-  const data = await req.json();
+  const data = await request.json();
   // Ensure leaseStartDate and leaseEndDate are in the correct ISO-8601 format
   const leaseStartDate = new Date(
     data.leaseStartDate + "T00:00:00Z"
